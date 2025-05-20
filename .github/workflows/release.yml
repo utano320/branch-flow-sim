@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: read
 
 jobs:
   release:
@@ -15,6 +16,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 1) 直近のタグを推定（git-describe で取得）
+      - name: Get previous tag
+        id: prev
+        run: |
+          echo "tag=$(git describe --tags --abbrev=0 HEAD^)" >> "$GITHUB_OUTPUT"
+
+      # 2) GitHub API で本文生成
+      - name: Generate release notes (REST)
+        id: notes
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/${{ github.repository }}/releases/generate-notes
+          tag_name: ${{ github.ref_name }}
+          previous_tag_name: ${{ steps.prev.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 3) Release 作成（本文に ↑ を流し込む）
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -22,4 +41,6 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           release_name: ${{ github.ref_name }}
-          generate_release_notes: true
+          body: ${{ fromJSON(steps.notes.outputs.data).body }}
+          draft: false
+          prerelease: false
