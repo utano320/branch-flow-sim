@@ -1,0 +1,13 @@
+name: Publish Release (Sim)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo release
+        run: echo "🎉 Creating GitHub Release for ${{ github.ref_name }}"
