@@ -1,0 +1,15 @@
+name: "03: Deploy to Production"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  simulate-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show branch 🌿
+        run: echo "Branch is ${{ github.ref_name }}"
+      - name: Deploy
+        run: echo "Deploy to production (simulated) 🚀"
