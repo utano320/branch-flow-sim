@@ -1,0 +1,15 @@
+name: Deploy to Develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  simulate-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show branch 🌿
+        run: echo "Branch is ${{ github.ref_name }}"
+      - name: Deploy
+        run: echo "Deploy to develop (simulated) 🚀"
